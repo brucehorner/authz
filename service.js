@@ -15,7 +15,7 @@ app.use(require('morgan')('dev'));
 router.route('/subject')
   .get(function(req, res)			// get all subjects
   {
-  	res.send('the (paginated) list of all subjects');
+  	res.end('the (paginated) list of all subjects');
   });
 	
 router.route('/subject/:id') 
@@ -30,8 +30,10 @@ router.route('/subject/:id')
 		{
 			if (resource)	// the simple request with a single resource
 			{
-				core.authz(subject, action, resource, function(answer)
+				core.authz(subject, action, resource, function(err, answer)
 				{
+					// stop ignoring error !
+					
 					res.json(
 						{
 						'comment' : 'Request for subject authz',
@@ -58,8 +60,10 @@ router.route('/subject/:id')
 		else
 		{
 			// send the ref data / profile for this subject
-			data_service.subject_data(subject, function(profile)
+			data_service.subject_data(subject, function(err, profile)
 			{
+				// don't ignore the error !
+				
 				res.json (
 				{ 'comment': 'Simple request for subject',
 					'subject': subject,

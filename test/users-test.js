@@ -10,7 +10,7 @@ var helper = function(subject, results)
 		var prediction = results[index];
 	  it('Enttitlement to ' + resource + ' should be ' + prediction, function()
 		{
-	    service.authz(subject, action, resource, function(answer)
+	    service.authz(subject, action, resource, function(err, answer)
 			{
 		    assert.equal(answer, prediction);
 			});

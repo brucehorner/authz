@@ -19,7 +19,7 @@ module.exports.global_data =
 
 module.exports.subject_data = function(subject, callback)
 {
-	var delay = 50 + Math.random()*50;
+	var delay = 0; //50 + Math.random()*50;
 	setTimeout(function retrieve_data()
 	{
 		var subject_data = { 'subject': subject };
@@ -50,6 +50,6 @@ module.exports.subject_data = function(subject, callback)
 		if (emulator == 'Y')
 		subject_data['emulator-admin-level'] = subject_data['admin-level'];		
 
-		callback(subject_data);
+		return callback(null, subject_data);
 	}, delay);
 }

@@ -6,7 +6,7 @@ describe('Basic User Data', function()
 {
   it('should match profile', function()
 	{
-    core.get_data('u1', null, function(data)
+    core.get_data('u1', null, function(err, data)
 		{
 			assert.equal(data['subject'], 'u1');
 			assert.equal(data['admin-level'], 3);
@@ -17,9 +17,9 @@ describe('Basic User Data', function()
 
 describe('Extended User Data', function()
 {
-  it('should match profile', function()
+  it('should match extended profile', function()
 	{
-    core.get_data('u1', data_service.global_data, function(data)
+    core.get_data('u1', data_service.global_data, function(err, data)
 		{
 			assert.equal(data['subject'], 'u1');
 			assert.equal(data['admin-level'], 3);

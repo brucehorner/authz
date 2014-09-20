@@ -6,7 +6,7 @@ var helper = function(subject, resource, correct_result)
 {
   it('should be ' + correct_result, function()
 	{
-    service.authz(subject, action, resource, function(result)
+    service.authz(subject, action, resource, function(err, result)
 		{
 			assert.equal(result, correct_result);
 		});
