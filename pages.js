@@ -5,7 +5,7 @@
 
 module.exports.home = function(req, res)
 {
-	res.end ('Welcome to the Authorization Service home page!');
+  res.end('Welcome to the Authorization Service home page!');
 };
 
 module.exports.apiHome = function(req, res)

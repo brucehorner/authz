@@ -6,8 +6,8 @@
  */
 var _ = require('underscore');
 var async = require('async');
-var rules = require ('./rules');
-var dataService = require ('./data-service');
+var rules = require('./rules');
+var dataService = require('./data-service');
 
 // consider pulling the relatively constant global data from 
 // the data service into a module level variable
@@ -18,12 +18,12 @@ var dataService = require ('./data-service');
 var authz = function (subject, action, resource, callback)
 {
   getData(subject, dataService.globalData, function(err, data)
-	{
-	  invokeRule(data, action, resource, function(err, result)
-		{
-			return callback(err, result);
-		});	
-	});
+  {
+    invokeRule(data, action, resource, function(err, result)
+    {
+      return callback(err, result);
+    });  
+  });
 }
 
 
@@ -31,34 +31,34 @@ var authzMultiAllParallel = function (subject, actions, resources, callback)
 {
   var calls = [];
   var response = [];
-  getData(subject, dataService.globalData, function(data)
-	{  	
-		// build up the array of functions to call
-	  actions.forEach(function actionIterator(action)
-		{
-	    resources.forEach(function resourceIterator(resource)
-			{
-		    var callback = function (err, answer)
-				{
-	        response.push(
-						{
-							'subject':  subject,
-							'action' :  action,
-							'resource': resource,
-							'decision': answer
-						});        
-		    };
+  getData(subject, dataService.globalData, function dataProcessor(data)
+  {    
+    // build up the array of functions to call
+    actions.forEach(function actionIterator(action)
+    {
+      resources.forEach(function resourceIterator(resource)
+      {
+        var callback = function (err, answer)
+        {
+          response.push(
+            {
+              'subject':  subject,
+              'action' :  action,
+              'resource': resource,
+              'decision': answer
+            });        
+        };
 
-		    calls.push(invokeRuleAsync(callback, data, action, resource));
-	    });
-	  });
+        calls.push(invokeRuleAsync(callback, data, action, resource));
+      });
+    });
 
-	  async.parallel(calls, function handler(err, results)
-		{
-	    console.log ('all results', results);
-	  });
+    async.parallel(calls, function handler(err, results)
+    {
+      console.log ('all results', results);
+    });
 
-	  return callback(response);
+    return callback(response);
   });
 }
 
@@ -67,38 +67,38 @@ var invokeRule = function (data, action, resource, callback)
 {
   var inContextRule = rules[resource];
   if (inContextRule)
-	{
+  {
     return callback(null, inContextRule(data, action));  
-	}
-	
-	// set up for the very odd case of emulation
-	// where the action is emulate
-	// emulator is the subject
-	// emulatee is the resource
-	if (action == 'emulate')
-	{
-		getData(resource, null, function(err, emulateeData)
-		{
-			data.emulatorId = data.subject;
-			data.emulatorAdminLevel = data.adminLevel;
-			data.adminLevel = emulateeData.adminLevel;
-			return callback(null, rules.canEmulateOrViewPB(data, action));				
-		});
-	}
+  }
+  
+  // set up for the very odd case of emulation
+  // where the action is emulate
+  // emulator is the subject
+  // emulatee is the resource
+  if (action == 'emulate')
+  {
+    getData(resource, null, function dataProcessor(err, emulateeData)
+    {
+      data.emulatorId = data.subject;
+      data.emulatorAdminLevel = data.adminLevel;
+      data.adminLevel = emulateeData.adminLevel;
+      return callback(null, rules.canEmulateOrViewPB(data, action));        
+    });
+  }
   else
-	{
-   	// attempt to use an unexpected function/resource
-		console.log('ERROR: Unknown rule for resource', resource);
-   	return callback(null, false);
-	}
+  {
+     // attempt to use an unexpected function/resource
+    console.log('ERROR: Unknown rule for resource', resource);
+    return callback(null, false);
+  }
 }
 
 // rule invocation with callback to work with async module
 var invokeRuleAsync = function (callback, data, action, resource)
 {
-  invokeRule(data, action, resource, function(err, result)
-	{
-  	callback(err, result);
+  invokeRule(data, action, resource, function ruleProcessor(err, result)
+  {
+    callback(err, result);
   });
 }
 
@@ -106,13 +106,13 @@ var invokeRuleAsync = function (callback, data, action, resource)
 // with global data
 var getData = function(subject, globalData, callback)
 {
-  dataService.subjectData(subject, function process(err, subjectData)
-	{
-		if (globalData)
-		  callback(null, _.extend(subjectData, globalData));
-		else
-			callback(null, subjectData);
-	});
+  dataService.subjectData(subject, function dataProcessor(err, subjectData)
+  {
+    if (globalData)
+      callback(null, _.extend(subjectData, globalData));
+    else
+      callback(null, subjectData);
+  });
 }
 
 module.exports.authz = authz

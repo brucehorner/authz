@@ -8,29 +8,35 @@
  * 5. some text protocol here, such as standard entitlements are in array called 'ents'
  */
 
-module.exports = {
+module.exports =
+{
   // a simple AND 
-  resA: function (data, action) {
+  resA: function (data, action)
+	{
     return resAImpl(data, action);
   },
 
   // NOT of the simple AND 
-  resB: function (data, action) {
+  resB: function (data, action)
+	{
     return !resAImpl(data, action);
   },
 
   // use a shared function, check for "internal"
-  resC: function (data, action) {
+  resC: function (data, action)
+	{
     return isInternal(data);
   },
 
   // a simple OR
-  resD: function (data, action) { 
+  resD: function (data, action)
+	{
     return hasEntitlement(data, 'e3') || hasEntitlement(data, 'e4');
   },
 
   // match a string in a resource-list, data driven policy
-  resE: function (data, action) {
+  resE: function (data, action)
+	{
     var list = data.eList;
     if (list)
        return list.indexOf('eResE') > -1;
@@ -39,61 +45,65 @@ module.exports = {
   },
 
   // the modern attribute-driven with fixed entitlement fallback
-  resF: function(data, action) {
+  resF: function(data, action)
+	{
     return (isInternal(data) && data.attr1 === 'TRADER')
                  ||
-            hasEntitlement(data, 'e1');    
+            hasEntitlement(data, 'e1');
   },
-	
-	// the PB emulation rule
-	canEmulateOrViewPB: function(data, action)
-	{
-		// not allowed if no emulator id
-		if (!data.emulatorId)
-		  return false;
-			
-		if (action === 'show' || action === 'emulate')
-		{
-			var emulationAccess    = data.emulationAccess;
-			var emulatorAdminLevel = data.emulatorAdminLevel;
-			var emulateeAdminLevel = data.adminLevel;
-			if (!emulationAccess || !emulatorAdminLevel || !emulateeAdminLevel)
-			  return false;
-					
-			if ((emulationAccess === 'Y') && (emulatorAdminLevel >= 1)
-			  && ( (emulateeAdminLevel === 0)
-					   ||
-					   (emulatorAdminLevel > emulateeAdminLevel)
-				   ))
-			{
-			  	return true;
-		  }
-		}
-		return false;
-	}
+
+  // the PB emulation rule
+  canEmulateOrViewPB: function(data, action)
+  {
+    // not allowed if no emulator id
+    if (!data.emulatorId)
+      return false;
+      
+    if (action === 'show' || action === 'emulate')
+    {
+      var emulationAccess    = data.emulationAccess;
+      var emulatorAdminLevel = data.emulatorAdminLevel;
+      var emulateeAdminLevel = data.adminLevel;
+      if (!emulationAccess || !emulatorAdminLevel || !emulateeAdminLevel)
+        return false;
+          
+      if ((emulationAccess === 'Y') && (emulatorAdminLevel >= 1)
+        && ( (emulateeAdminLevel === 0)
+             ||
+             (emulatorAdminLevel > emulateeAdminLevel)
+           ))
+      {
+          return true;
+      }
+    }
+    return false;
+  }
 }
 
 // helper function to confirm if an entitlement is present
-var hasEntitlement = function hasEntitlement(data, ent) {
+var hasEntitlement = function hasEntitlement(data, ent)
+{
   var entitlementsArray = data.ents;
   if (entitlementsArray) 
-	{
-		var x = entitlementsArray.indexOf(ent);
+  {
+    var x = entitlementsArray.indexOf(ent);
     return x > -1;
-	}
+  }
   
   return false;
 }
 
 // a shared implementation
-var resAImpl = function resAImpl(data, action) {
+var resAImpl = function resAImpl(data, action)
+{
   return hasEntitlement(data,'e1') && hasEntitlement(data,'e2');
 }
 
-var isInternal = function isInternal(data) {
+var isInternal = function isInternal(data)
+{
   var answer = data.internal;
   if (answer)
-		return answer === true;
-		
-	return false;
+    return answer === true;
+    
+  return false;
 }
