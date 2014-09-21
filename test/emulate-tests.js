@@ -2,13 +2,13 @@ var assert = require('assert');
 var service = require ('../core');
 var action = 'emulate';
 
-var helper = function(subject, resource, correct_result)
+var helper = function(subject, resource, correctResult)
 {
-  it('should be ' + correct_result, function()
+  it('should be ' + correctResult, function()
 	{
     service.authz(subject, action, resource, function(err, result)
 		{
-			assert.equal(result, correct_result);
+			assert.equal(result, correctResult);
 		});
   });
 	

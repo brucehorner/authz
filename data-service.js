@@ -6,9 +6,9 @@
 /*
  * The global, non subject specific data
  */
-module.exports.global_data =
+module.exports.globalData =
 {
-  'eligible-cost-centers': ['1234', '53453', '134234', '7657']	
+  'eligibleCostCenters': ['1234', '53453', '134234', '7657']	
 };
 
 /*
@@ -17,39 +17,35 @@ module.exports.global_data =
  * also for the evaluation, create a random delay
  */
 
-module.exports.subject_data = function(subject, callback)
+module.exports.subjectData = function(subject, callback)
 {
-	var delay = 0; //50 + Math.random()*50;
-	setTimeout(function retrieve_data()
+	var profile = { 'subject': subject };
+	if (subject === 'u1')
+	{			
+		// list of string entitlements
+		profile.ents = ['e1','e2', 'e3'];
+		profile.emulationAccess = 'Y';
+		profile.adminLevel = 3;		
+	}
+	else if (subject === 'u2')
 	{
-		var subject_data = { 'subject': subject };
-		if (subject == 'u1')
-		{
-			// list of string entitlements
-			subject_data['ents'] = ['e1','e2', 'e3'];
-			subject_data['emulation-access'] = 'Y';
-			subject_data['admin-level'] = 3;		
-		}
-		else if (subject == 'u2')
-		{
-			subject_data['internal'] = true;
-			subject_data['ents'] = ['e4'];
-			subject_data['e-list'] = ['e_res_e'];
-			// a single attr/value 
-			subject_data['attr1'] = 'TRADER';
-			subject_data['admin-level'] = 1;		
-		}
-		else if (subject == 'u3')
-		{
-			subject_data['ents'] = ['e3', 'e4'];
-			subject_data['attr1'] = 'FINANCE';
-		}
+		profile.internal = true;
+		profile.ents = ['e4'];
+		profile.eList = ['eResE'];
+		// a single attr/value 
+		profile.attr1 = 'TRADER';
+		profile.adminLevel = 1;		
+	}
+	else if (subject === 'u3')
+	{
+		profile.ents = ['e3', 'e4'];
+		profile.attr1 = 'FINANCE';
+	}
 	
-		// patch up for emulation
-		var emulator = subject_data['emulation-access'] || 'N';
-		if (emulator == 'Y')
-		subject_data['emulator-admin-level'] = subject_data['admin-level'];		
+	// patch up for emulation
+	var emulator = profile.emulation_access || 'N';
+	if (emulator === 'Y') 
+	  profile.emulatorAdminLevel = profile.adminLevel;		
 
-		return callback(null, subject_data);
-	}, delay);
+	return callback(null, profile);
 }

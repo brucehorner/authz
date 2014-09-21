@@ -10,56 +10,60 @@
 
 module.exports = {
   // a simple AND 
-  res_a: function (data, action) {
-    return res_a_impl(data, action);
+  resA: function (data, action) {
+    return resAImpl(data, action);
   },
 
   // NOT of the simple AND 
-  res_b: function (data, action) {
-    return !res_a_impl(data, action);
+  resB: function (data, action) {
+    return !resAImpl(data, action);
   },
 
   // use a shared function, check for "internal"
-  res_c: function (data, action) {
-    return is_internal(data);
+  resC: function (data, action) {
+    return isInternal(data);
   },
 
   // a simple OR
-  res_d: function (data, action) { 
-    return has_entitlement(data, 'e3') || has_entitlement(data, 'e4');
+  resD: function (data, action) { 
+    return hasEntitlement(data, 'e3') || hasEntitlement(data, 'e4');
   },
 
   // match a string in a resource-list, data driven policy
-  res_e: function (data, action) {
-    var list = data['e-list'];
+  resE: function (data, action) {
+    var list = data.eList;
     if (list)
-       return list.indexOf('e_res_e') > -1;
+       return list.indexOf('eResE') > -1;
     else
        return false;
   },
 
   // the modern attribute-driven with fixed entitlement fallback
-  res_f: function(data, action) {
-    return (is_internal(data) && data['attr1'] === 'TRADER')
+  resF: function(data, action) {
+    return (isInternal(data) && data.attr1 === 'TRADER')
                  ||
-            has_entitlement(data, 'e1');    
+            hasEntitlement(data, 'e1');    
   },
 	
 	// the PB emulation rule
-	can_emulate_or_view_PB: function(data, action)
+	canEmulateOrViewPB: function(data, action)
 	{
-		if (!data['emulator-id']) return false;	// not allowed if no emulator id
-		if (action == 'show' || action == 'emulate')
+		// not allowed if no emulator id
+		if (!data.emulatorId)
+		  return false;
+			
+		if (action === 'show' || action === 'emulate')
 		{
-			var emulation_access     = data['emulation-access'],
-			    emulator_admin_level = data['emulator-admin-level'],
-			    emulatee_admin_level = data['admin-level'];
-			if (!emulation_access || !emulator_admin_level || !emulatee_admin_level) return false;
+			var emulationAccess    = data.emulationAccess;
+			var emulatorAdminLevel = data.emulatorAdminLevel;
+			var emulateeAdminLevel = data.adminLevel;
+			if (!emulationAccess || !emulatorAdminLevel || !emulateeAdminLevel)
+			  return false;
 					
-			if ((emulation_access == 'Y') && (emulator_admin_level >= 1)
-			  && ( (emulatee_admin_level == 0)
+			if ((emulationAccess === 'Y') && (emulatorAdminLevel >= 1)
+			  && ( (emulateeAdminLevel === 0)
 					   ||
-					   (emulator_admin_level > emulatee_admin_level)
+					   (emulatorAdminLevel > emulateeAdminLevel)
 				   ))
 			{
 			  	return true;
@@ -70,23 +74,26 @@ module.exports = {
 }
 
 // helper function to confirm if an entitlement is present
-var has_entitlement = function(data, ent) {
-  var entitlements_array = data['ents']
-  if (entitlements_array) 
+var hasEntitlement = function hasEntitlement(data, ent) {
+  var entitlementsArray = data.ents;
+  if (entitlementsArray) 
 	{
-		var x = entitlements_array.indexOf(ent);
+		var x = entitlementsArray.indexOf(ent);
     return x > -1;
 	}
-  else
-    return false;
+  
+  return false;
 }
 
 // a shared implementation
-var res_a_impl = function(data, action) {
-  return has_entitlement(data,'e1') && has_entitlement(data,'e2');
+var resAImpl = function resAImpl(data, action) {
+  return hasEntitlement(data,'e1') && hasEntitlement(data,'e2');
 }
 
-var is_internal = function(data) {
-  var answer = data['internal'];
-  if (answer) return answer==true; else return false;
+var isInternal = function isInternal(data) {
+  var answer = data.internal;
+  if (answer)
+		return answer === true;
+		
+	return false;
 }

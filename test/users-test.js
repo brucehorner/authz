@@ -1,6 +1,6 @@
 var assert = require('assert');
 var service = require ('../core');
-var resources = ['res_a', 'res_b', 'res_c', 'res_d', 'res_e', 'res_f'];
+var resources = ['resA', 'resB', 'resC', 'resD', 'resE', 'resF'];
 var action = 'read';
 
 var helper = function(subject, results)

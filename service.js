@@ -4,11 +4,12 @@
  */
 
 var express = require('express');
-var app = express();
 var core = require('./core');
-var router = express.Router();
 var pages = require('./pages');
-var data_service = require('./data-service.js');
+var dataService = require('./data-service');
+
+var app = express();
+var router = express.Router();
 
 app.use(require('morgan')('dev'));
 
@@ -35,21 +36,20 @@ router.route('/subject/:id')
 					// stop ignoring error !
 					
 					res.json(
-						{
-						'comment' : 'Request for subject authz',
-						'subject' : subject,
-						'action'  : action,
-						'resource': resource,
-						'decision': answer
+						{ 'comment' : 'Request for subject authz',
+						  'subject' : subject,
+						  'action'  : action,
+						  'resource': resource,
+						  'decision': answer
 					});				
 				});
 			}
 			else if (resources)	// the multi resource
 			{
-				res.json({'comment':"it's coming soon"});
+				res.json({'comment': "it's coming soon"});
 				
 				// reformat into an array using split()
-				// then pass that array to authz_multi_all
+				// then pass that array to authz-multi-all
 			}
 			else 	// no idea what the request means
 			{
@@ -60,7 +60,7 @@ router.route('/subject/:id')
 		else
 		{
 			// send the ref data / profile for this subject
-			data_service.subject_data(subject, function(err, profile)
+			dataService.subjectData(subject, function(err, profile)
 			{
 				// don't ignore the error !
 				
@@ -74,7 +74,7 @@ router.route('/subject/:id')
 	});
 		
 app.use('/api', router);
-router.get('/', pages.api_home);
+router.get('/', pages.apiHome);
 app.get('/', pages.home); 
 
 app.set('title', 'Authorization Service');
